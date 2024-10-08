@@ -1,15 +1,12 @@
 /*Q1. JS Variable needs to be created here. Below variable is just an example. Try to add more attributes.*/
 const initialTravellers = [
   {
-    id: 1, name: 'Jack', phone: 88885555,
-    bookingTime: new Date(),
+    id: 1, name: 'Jack', phone: 88885555, email: 'jack@example.com', address: '123 Main St', bookingTime: new Date(),
   },
   {
-    id: 2, name: 'Rose', phone: 88884444,
-    bookingTime: new Date(),
+    id: 2, name: 'Rose', phone: 88884444, email: 'rose@example.com', address: '124 Main St', bookingTime: new Date(),
   },
 ];
-
 
 function TravellerRow(props) {
   {/*Q3. Placeholder to initialize local variable based on traveller prop.*/}
@@ -91,9 +88,12 @@ class Homepage extends React.Component {
 	super();
 	}
 	render(){
+    const totalSeats = 50;
+    const freeSeats = totalSeats - this.props.travellers.length;
 	return (
 	<div>
 		{/*Q2. Placeholder for Homepage code that shows free seats visually.*/}
+    <h2>Free Seats: {freeSeats}</h2>
 	</div>);
 	}
 }
@@ -118,7 +118,9 @@ class TicketToRide extends React.Component {
       this.setState({ travellers: initialTravellers });
     }, 500);
   }
-
+  selectComponent(component) {
+    this.setState({ selectedComponent: component });
+  }
   bookTraveller(passenger) {
 	    /*Q4. Write code to add a passenger to the traveller state variable.*/
   }
@@ -130,22 +132,23 @@ class TicketToRide extends React.Component {
     return (
       <div>
         <h1>Ticket To Ride</h1>
-	<div>
-	    {/*Q2. Code for Navigation bar. Use basic buttons to create a nav bar. Use states to manage selection.*/}
-	</div>
-	<div>
-		{/*Only one of the below four divisions is rendered based on the button clicked by the user.*/}
-		{/*Q2 and Q6. Code to call Instance that draws Homepage. Homepage shows Visual Representation of free seats.*/}
-		{/*Q3. Code to call component that Displays Travellers.*/}
-		
-		{/*Q4. Code to call the component that adds a traveller.*/}
-		{/*Q5. Code to call the component that deletes a traveller based on a given attribute.*/}
-	</div>
+        <div>
+          <button onClick={() => this.selectComponent('home')}>Home</button>
+          <button onClick={() => this.selectComponent('display')}>Display Travellers</button>
+          <button onClick={() => this.selectComponent('add')}>Add Traveller</button>
+          <button onClick={() => this.selectComponent('delete')}>Delete Traveller</button>
+        </div>
+        <div>
+          {this.state.selectedComponent === 'home' && <Homepage />}
+          {this.state.selectedComponent === 'display' && <Display travellers={this.state.travellers} />}
+          {this.state.selectedComponent === 'add' && <Add />}
+          {this.state.selectedComponent === 'delete' && <Delete />}
+        </div>
       </div>
     );
   }
 }
 
-const element = <TicketToRide />;
+// const element = <TicketToRide />;
 
-ReactDOM.render(element, document.getElementById('contents'));
+export default TicketToRide;
