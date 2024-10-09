@@ -1,3 +1,5 @@
+import './App.css'; // 引入CSS
+
 /*Q1. JS Variable needs to be created here. Below variable is just an example. Try to add more attributes.*/
 const initialTravellers = [
   {
@@ -289,30 +291,42 @@ class Delete extends React.Component {
 }
 
 class Homepage extends React.Component {
-	constructor() {
-	super();
-	}
-	render(){
-    const totalSeats = 10;
-    const freeSeats = totalSeats - this.props.travellers.length;
-	return (
-	<div>
-		{/*Q2. Placeholder for Homepage code that shows free seats visually.*/}
-    <h2>Free Seats: {freeSeats}</h2>
-	</div>);
-	}
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    const { travellers, totalSeats } = this.props;
+    const occupiedSeats = travellers.length;
+    const freeSeats = totalSeats - occupiedSeats;
+
+    const seats = Array.from({ length: totalSeats }, (_, index) => ({
+      id: index + 1,
+      isFree: index < freeSeats,
+    }));
+
+    return (
+      <div>
+        <h2>Free Seats: {freeSeats}</h2>
+        <div className="seating-chart">
+          {seats.map(seat => (
+            <div
+              key={seat.id}
+              className={`seat ${seat.isFree ? 'free' : 'occupied'}`}
+            ></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 }
 class TicketToRide extends React.Component {
   constructor() {
     super();
-    this.state = { travellers: [], selector: 1};
+    this.totalSeats = 10; // 定义总座位数
+    this.state = { travellers: [], selectedComponent: 'home' };
     this.bookTraveller = this.bookTraveller.bind(this);
     this.deleteTraveller = this.deleteTraveller.bind(this);
-  }
-
-  setSelector(value)
-  {
-  	/*Q2. Function to set the value of component selector variable based on user's button click.*/
   }
   componentDidMount() {
     this.loadData();
@@ -325,10 +339,16 @@ class TicketToRide extends React.Component {
     }, 500);
   }
   selectComponent(component) {
+    /*Q2. Function to set the value of component selector variable based on user's button click.*/
     this.setState({ selectedComponent: component });
   }
   bookTraveller(passenger) {
 	    /*Q4. Write code to add a passenger to the traveller state variable.*/
+      const {travellers} = this.state;
+      // if (travellers.length >= this.totalSeats) {
+      //   alert("Sorry, all seats are occupied!");
+      //   return;
+      // }
       this.setState(prevState => {
         // 生成新的唯一ID
         const newId = prevState.travellers.length > 0 
@@ -375,7 +395,12 @@ class TicketToRide extends React.Component {
           <button onClick={() => this.selectComponent('delete')}>Delete Traveller</button>
         </div>
         <div>
-          {this.state.selectedComponent === 'home' && <Homepage travellers={this.state.travellers} />}
+          {this.state.selectedComponent === 'home' && (
+            <Homepage 
+              travellers={this.state.travellers} 
+              totalSeats={this.totalSeats} // 传递 totalSeats
+            />
+          )}
           {this.state.selectedComponent === 'display' && <Display travellers={this.state.travellers} />}
           {this.state.selectedComponent === 'add' &&  <Add bookTraveller={this.bookTraveller} />}
           {this.state.selectedComponent === 'delete' && <Delete deleteTraveller={this.deleteTraveller} />}

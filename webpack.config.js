@@ -14,7 +14,11 @@ module.exports = {
         use: {
           loader: 'babel-loader' // 使用 babel-loader
         }
-      }
+      },
+      {
+        test: /\.css$/i, // 匹配 .css 文件
+        use: ['style-loader', 'css-loader'], // 使用的加载器，从后往前执行
+      },
     ]
   },
   resolve: {
