@@ -133,23 +133,102 @@ function Display({travellers}) {
 }
 
 class Add extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+    this.state = { name: '', phone: '', email: '', address: '' };
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+  }
+  handleChange(e) {
+    this.setState({ [e.target.name]: e.target.value });
   }
 
   handleSubmit(e) {
     e.preventDefault();
     /*Q4. Fetch the passenger details from the add form and call bookTraveller()*/
+    const { name, phone, email, address } = this.state;
+    
+    // 简单的验证
+    if (!name || !phone || !email || !address) {
+      alert("请填写所有字段！");
+      return;
+    }
+    
+    const newTraveller = {
+      name,
+      phone: parseInt(phone, 10),
+      email,
+      address
+    };
+    
+    this.props.bookTraveller(newTraveller);
+    
+    this.setState({
+      name: '',
+      phone: '',
+      email: '',
+      address: ''
+    });
   }
 
   render() {
     return (
-      <form name="addTraveller" onSubmit={this.handleSubmit}>
-	    {/*Q4. Placeholder to enter passenger details. Below code is just an example.*/}
-        <input type="text" name="travellername" placeholder="Name" />
-        <button>Add</button>
-      </form>
+        <form name="addTraveller" onSubmit={this.handleSubmit}>
+          <h2>Add Traveller</h2>
+          <div>
+            <label>
+              Name:
+              <input 
+                type="text" 
+                name="name" 
+                placeholder="Name" 
+                value={this.state.name}
+                onChange={this.handleChange}
+                required 
+              />
+            </label>
+          </div>
+          <div>
+            <label>
+              Phone:
+              <input 
+                type="text" 
+                name="phone" 
+                placeholder="Phone" 
+                value={this.state.phone}
+                onChange={this.handleChange}
+                required 
+              />
+            </label>
+          </div>
+          <div>
+            <label>
+              Email:
+              <input 
+                type="email" 
+                name="email" 
+                placeholder="Email" 
+                value={this.state.email}
+                onChange={this.handleChange}
+                required 
+              />
+            </label>
+          </div>
+          <div>
+            <label>
+              Address:
+              <input 
+                type="text" 
+                name="address" 
+                placeholder="Address" 
+                value={this.state.address}
+                onChange={this.handleChange}
+                required 
+              />
+            </label>
+          </div>
+          <button type="submit">Add</button>
+        </form>
     );
   }
 }
@@ -217,10 +296,25 @@ class TicketToRide extends React.Component {
   }
   bookTraveller(passenger) {
 	    /*Q4. Write code to add a passenger to the traveller state variable.*/
+      this.setState(prevState => {
+        // 生成新的唯一ID
+        const newId = prevState.travellers.length > 0 
+          ? Math.max(...prevState.travellers.map(t => t.id)) + 1 
+          : 1;
+        
+        // 设置预订时间为当前时间
+        const travellerWithId = { 
+          ...passenger, 
+          id: newId, 
+          bookingTime: new Date() 
+        };
+        return { travellers: [...prevState.travellers, travellerWithId] };
+      });
   }
 
   deleteTraveller(passenger) {
 	  /*Q5. Write code to delete a passenger from the traveller state variable.*/
+
   }
   render() {
     return (
@@ -235,7 +329,7 @@ class TicketToRide extends React.Component {
         <div>
           {this.state.selectedComponent === 'home' && <Homepage travellers={this.state.travellers} />}
           {this.state.selectedComponent === 'display' && <Display travellers={this.state.travellers} />}
-          {this.state.selectedComponent === 'add' && <Add />}
+          {this.state.selectedComponent === 'add' &&  <Add bookTraveller={this.bookTraveller} />}
           {this.state.selectedComponent === 'delete' && <Delete />}
         </div>
       </div>
