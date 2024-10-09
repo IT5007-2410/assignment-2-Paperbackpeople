@@ -235,21 +235,54 @@ class Add extends React.Component {
 
 
 class Delete extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: ''
+    };
+    this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+  }
+  
+  handleChange(e) {
+    this.setState({ name: e.target.value });
   }
   handleSubmit(e) {
     e.preventDefault();
     /*Q5. Fetch the passenger details from the deletion form and call deleteTraveller()*/
+    const { name } = this.state;
+    
+    if (!name) {
+      alert("Please enter a name!");
+      return;
+    }
+    
+    // 调用父组件的 deleteTraveller 方法
+    this.props.deleteTraveller(name);
+    
+    // 重置表单
+    this.setState({ name: '' });
   }
 
   render() {
     return (
       <form name="deleteTraveller" onSubmit={this.handleSubmit}>
 	    {/*Q5. Placeholder form to enter information on which passenger's ticket needs to be deleted. Below code is just an example.*/}
-	<input type="text" name="travellername" placeholder="Name" />
-        <button>Delete</button>
+      <h2>Delete Traveller</h2>
+        <div>
+          <label>
+            Name:
+            <input 
+              type="text" 
+              name="name" 
+              placeholder="Name" 
+              value={this.state.name}
+              onChange={this.handleChange}
+              required 
+            />
+          </label>
+        </div>
+        <button type="submit">Delete</button>
       </form>
     );
   }
@@ -260,7 +293,7 @@ class Homepage extends React.Component {
 	super();
 	}
 	render(){
-    const totalSeats = 50;
+    const totalSeats = 10;
     const freeSeats = totalSeats - this.props.travellers.length;
 	return (
 	<div>
@@ -314,6 +347,21 @@ class TicketToRide extends React.Component {
 
   deleteTraveller(passenger) {
 	  /*Q5. Write code to delete a passenger from the traveller state variable.*/
+    this.setState(prevState => {
+      const index = prevState.travellers.findIndex(t => t.name === passenger);
+      
+      if (index === -1) {
+        alert("Passenger not found!");
+        return;
+      }
+      
+      const newTravellers = [...prevState.travellers];
+      newTravellers.splice(index, 1);
+      alert("Passenger deleted!");
+      
+      return { travellers: newTravellers };
+    });
+    
 
   }
   render() {
@@ -330,7 +378,7 @@ class TicketToRide extends React.Component {
           {this.state.selectedComponent === 'home' && <Homepage travellers={this.state.travellers} />}
           {this.state.selectedComponent === 'display' && <Display travellers={this.state.travellers} />}
           {this.state.selectedComponent === 'add' &&  <Add bookTraveller={this.bookTraveller} />}
-          {this.state.selectedComponent === 'delete' && <Delete />}
+          {this.state.selectedComponent === 'delete' && <Delete deleteTraveller={this.deleteTraveller} />}
         </div>
       </div>
     );
