@@ -345,10 +345,10 @@ class TicketToRide extends React.Component {
   bookTraveller(passenger) {
 	    /*Q4. Write code to add a passenger to the traveller state variable.*/
       const {travellers} = this.state;
-      // if (travellers.length >= this.totalSeats) {
-      //   alert("Sorry, all seats are occupied!");
-      //   return;
-      // }
+      if (travellers.length >= this.totalSeats) {
+        alert("Sorry, all seats are occupied!");
+        return;
+      }
       this.setState(prevState => {
         // 生成新的唯一ID
         const newId = prevState.travellers.length > 0 
