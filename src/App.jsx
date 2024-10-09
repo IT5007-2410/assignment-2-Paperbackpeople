@@ -293,7 +293,7 @@ class Homepage extends React.Component {
 	super();
 	}
 	render(){
-    const totalSeats = 50;
+    const totalSeats = 10;
     const freeSeats = totalSeats - this.props.travellers.length;
 	return (
 	<div>
